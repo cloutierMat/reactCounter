@@ -1,0 +1,7 @@
+frontend
+	de-uglify
+	add components to enter store and pos
+
+add functinality to reset to 0
+add functinality to set to specific value
+add +/- keyboard shortcut

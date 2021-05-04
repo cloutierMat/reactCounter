@@ -1,47 +1,63 @@
 const db = require('./db')
 
-const counterCollection = 'counter'
-const counters = {
-	onlyOneCreatedAtTheMoment: 0
-}
+const storeCounters = {}
 
-const schema = (operation, previousCount, newCount) => {
+//
+// schema for data storing in the db
+//
+const schema = (operation, previousCount, newCount, pos = 0) => {
 	return {
 		operation,
 		previousCount,
 		newCount,
+		pos,
 		timeStamp: new Date
 	}
 }
 
-async function init() {
-	const collection = await db.getCollection(counterCollection)
-	const cursor = collection.find().sort({ "timeStamp": -1 }).limit(1)
-	const result = await cursor.toArray()
-	counters.onlyOneCreatedAtTheMoment = result[0].newCount
-	console.log("model/counters init():", result[0])
-	return result[0]
+//
+// get current count from server's data
+// get from db if not initiated
+// set value to 0 if no db collections exists
+async function getCount(store) {
+	// returns immediately if a instance of the stores already exists
+	if (storeCounters[store]) return {
+		status: "connected to server",
+		count: storeCounters[store]
+	}
+	// 
+	try {
+		const result = await db.findLastOrCreate(store)
+		storeCounters[store] = result.count
+		return result
+	} catch (error) {
+		console.log("model/counters.js failed to getCount for:", store)
+	}
 }
 
-async function updateDb(newDbObject) {
-	const collection = await db.getCollection(counterCollection)
-	collection.insertOne(newDbObject)
-}
+// 
+// updates the servers status for a store
+// then calls the db to add new log
+// 
+function update(operation, user) {
+	const { store, pos } = user
+	if (!Object.keys(storeCounters).includes(store)) {
+		return { status: "You need to connect your store to the server" }
+	}
 
-function update(ops) {
-	const oldCount = counters.onlyOneCreatedAtTheMoment
-	const newCount = oldCount + ops
-	counters.onlyOneCreatedAtTheMoment = newCount
-	const operation = ops > 0
+	const oldCount = storeCounters[store]
+	const newCount = oldCount + operation
+	operation = operation > 0
 		? "increase"
 		: "decrease"
-	const newDbObject = schema(operation, oldCount, newCount)
-	if (ops !== 0) updateDb(newDbObject)
+	const newDbObject = schema(operation, oldCount, newCount, pos)
+	if (operation !== 0) db.insertOne(newDbObject, store)
 
-	return newCount
+	storeCounters[store] = newCount
+	return { status: "Connected to server", count: newCount }
 }
 
 module.exports = {
-	init,
-	update
+	update,
+	getCount
 }
