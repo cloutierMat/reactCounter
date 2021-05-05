@@ -22,7 +22,7 @@ const schema = (operation, previousCount, newCount, pos = 0) => {
 async function getCount(store) {
 	// returns immediately if a instance of the stores already exists
 	if (storeCounters[store]) return {
-		status: "connected to server",
+		status: "Connected to server",
 		count: storeCounters[store]
 	}
 	// 

@@ -25,7 +25,9 @@ function close() {
 async function insertOne(newDbObject, collection) {
 	try {
 		const coll = await getCollection(collection)
-		await coll.insertOne(newDbObject)
+		const result = await coll.insertOne(newDbObject)
+		const { operation, pos, newCount } = result.ops[0]
+		console.log(`Added a new operation to db store: ${collection} pos: ${pos} operation: ${operation} newCount: ${newCount}`)
 	} catch (error) {
 		console.log("model/db.js insertOne() unable to add entry to :", collection)
 	}

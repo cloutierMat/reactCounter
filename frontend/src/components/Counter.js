@@ -13,7 +13,6 @@ export function Counter() {
 		async function fetchData() {
 			const response = await fetch(path + store)
 			const obj = await response.json()
-			console.log(obj)
 			setCount(obj.count)
 			setServerStatus(obj.status)
 		}
@@ -30,7 +29,6 @@ export function Counter() {
 					body: JSON.stringify({ store, pos })
 				})
 				const countObj = await response.json()
-				console.log(countObj)
 				setCount(countObj.count)
 				setServerStatus(countObj.status)
 			} catch (error) {
