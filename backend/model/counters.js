@@ -18,34 +18,38 @@ const schema = (operation, previousCount, newCount, pos = 0) => {
 //
 // get current count from server's data
 // get from db if not initiated
-// set value to 0 if no db collections exists
+//
 async function getCount(store) {
 	// returns immediately if a instance of the stores already exists
-	if (storeCounters[store]) return {
-		status: "Connected to server",
-		count: storeCounters[store]
-	}
+	const newCounter = storeCounters[store]
+	if (newCounter) return newCounter
 	// 
 	try {
-		const result = await db.findLastOrCreate(store)
-		storeCounters[store] = result.count
+		const result = await db.findLast(store)
+		Object.assign(result, { serverStatus: "Online" })
+		storeCounters[store] = result
 		return result
 	} catch (error) {
 		console.log("model/counters.js failed to getCount for:", store)
+		return {
+			serverStatus: "Online",
+			dbStatus: "Store doesn't exist"
+		}
 	}
 }
 
 // 
-// updates the servers status for a store
+// updates the serverStatus for a store
 // then calls the db to add new log
 // 
 function update(operation, user) {
 	const { store, pos } = user
+	// Get out if store isn't already connected
 	if (!Object.keys(storeCounters).includes(store)) {
-		return { status: "You need to connect your store to the server" }
+		return { serverStatus: "You need to connect your store to the server" }
 	}
 
-	const oldCount = storeCounters[store]
+	const oldCount = storeCounters[store].count
 	const newCount = oldCount + operation
 	operation = operation > 0
 		? "increase"
@@ -53,8 +57,9 @@ function update(operation, user) {
 	const newDbObject = schema(operation, oldCount, newCount, pos)
 	if (operation !== 0) db.insertOne(newDbObject, store)
 
-	storeCounters[store] = newCount
-	return { status: "Connected to server", count: newCount }
+	Object.assign(storeCounters[store], { count: newCount, serverStatus: "Online" })
+
+	return storeCounters[store]
 }
 
 module.exports = {

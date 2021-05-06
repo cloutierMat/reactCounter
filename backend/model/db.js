@@ -37,7 +37,7 @@ async function insertOne(newDbObject, collection) {
 // find the latest count for a store
 // create a new collection if no stores exists
 //
-async function findLastOrCreate(store) {
+async function findLast(store) {
 	try {
 		const coll = await getCollection(store)
 		const cursor = coll.find().sort("timeStamp", -1).limit(1)
@@ -45,26 +45,15 @@ async function findLastOrCreate(store) {
 		// if the store exists return it's value
 		if (result.length) {
 			return {
-				status: "connected to db",
+				dbStatus: "Online",
 				count: result[0].newCount
 			}
-		}
-		// create a new entry if the stores doesn't already exists.
-		const initialization = {
-			operation: "Store creation",
-			newCount: 0,
-			timeStamp: new Date
-		}
-		await insertOne(initialization, store)
-		return {
-			status: "new store added to db",
-			count: 0
 		}
 	} catch (error) {
 		console.log("model/db.js findLastOrCreate trouble connecting to db for store:", store)
 		console.log(error)
 		return {
-			status: "Couldn't connect to db"
+			dbStatus: "Couldn't connect to db"
 		}
 	}
 }
@@ -74,6 +63,6 @@ module.exports = {
 	getDb,
 	getCollection,
 	close,
-	findLastOrCreate,
+	findLast,
 	insertOne
 }

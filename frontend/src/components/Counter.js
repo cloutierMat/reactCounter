@@ -1,39 +1,37 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { Button } from "./Buttons"
 import { Status } from "./Status"
+import apiComm from '../model/apiComm'
 
 export function Counter() {
 	const [count, setCount] = useState(0)
-	const [serverStatus, setServerStatus] = useState("Waiting for connection")
-	const [path, setPath] = useState('http://localhost:8087/counter/')
-	const [store, setStore] = useState("mine")
-	const [pos, setPos] = useState(0)
+	const [offset, setOffset] = useState(0)
+	const [status, setStatus] = useState({ server: "Waiting for connection", database: "Waiting for connection" })
+	const [store, setStore] = useState({ store: "mine", pos: 0 })
+
+	async function fetchData() {
+		const result = await apiComm.getCount(store.store)
+		if (Object.keys(result).includes("count")) {
+			setCount(result.count)
+		}
+		setStatus({
+			server: result.serverStatus,
+			database: result.dbStatus
+		})
+	}
 
 	useEffect(() => {
-		async function fetchData() {
-			const response = await fetch(path + store)
-			const obj = await response.json()
-			setCount(obj.count)
-			setServerStatus(obj.status)
-		}
 		fetchData()
 		setInterval(fetchData, 3000)
-	}, [path, store])
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [])
 
 	const clickHandler = (name) => {
-		return async () => {
-			try {
-				const response = await fetch(path + name, {
-					method: "post",
-					headers: { "Content-Type": "application/json" },
-					body: JSON.stringify({ store, pos })
-				})
-				const countObj = await response.json()
-				setCount(countObj.count)
-				setServerStatus(countObj.status)
-			} catch (error) {
-				setServerStatus("error in handling your request")
-			}
+		return () => {
+			const modifier = (name === 'increase' ? 1 : -1)
+			setCount(count + modifier)
+			setOffset(offset + modifier)
+			apiComm.update(name, store)
 		}
 	}
 
@@ -47,6 +45,6 @@ export function Counter() {
 				return <Button className="btn" name={name} onClick={clickHandler(name)} key={name} />
 			})}
 			</section>
-			<section className="status"> <Status serverStatus={serverStatus} /></section>
+			<section className="status"> <Status serverStatus={status.server} dbStatus={status.database} /></section>
 		</>)
 }

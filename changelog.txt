@@ -1,8 +1,1 @@
-backend
-model/counters.js changed counter to be ready to deal with multiple counters
-model/ tranfering db related function to db.js
-model/counters.js change init to recognize ne collection and create them
-									return {status:"message"}
-
-front end
-src/counter.js deal with incoming status
+	have db return it's status

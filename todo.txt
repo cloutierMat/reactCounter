@@ -1,7 +1,14 @@
 frontend
 	de-uglify
 	add components to enter store and pos
+	fecth only every 3 seconds. post or get depending on if new value 
 
-add functinality to reset to 0
-add functinality to set to specific value
+backend
+	handle invalid request on endpoints
+	merge decrease increase to update
+
+	
+add functionality to reset to 0
+add functionality to set to specific value
 add +/- keyboard shortcut
+make counter work offline
