@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react"
-import { Button } from "./Buttons"
-import { Status } from "./Status"
+import Button from "./Buttons"
+import Status from "./Status"
+import Flipper from './Flipper'
 import apiComm from '../model/apiComm'
 
 export function Counter() {
@@ -38,13 +39,15 @@ export function Counter() {
 	return (
 		<>
 			<h1>
-				Capacity Counter
+				Store Counter
 			</h1>
-			<h4>Current Count: {count}</h4>
-			<section>{["increase", "decrease"].map(name => {
-				return <Button className="btn" name={name} onClick={clickHandler(name)} key={name} />
-			})}
-			</section>
+			<div className="cardContainer">
+				<Flipper count={count} />
+				<section>{["decrease", "increase"].map(name => {
+					return <Button className="btn" name={name} onClick={clickHandler(name)} key={name} />
+				})}
+				</section>
+			</div>
 			<section className="status"> <Status serverStatus={status.server} dbStatus={status.database} /></section>
 		</>)
 }

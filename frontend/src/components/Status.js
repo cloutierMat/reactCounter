@@ -1,4 +1,4 @@
-export function Status(props) {
+export default function Status(props) {
 	const { serverStatus, dbStatus } = props
 	return <>
 		Server status: {serverStatus}

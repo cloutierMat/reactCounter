@@ -1,0 +1,54 @@
+body {
+	background-color: #ffc380;
+	color: #095170;
+	font-size: xx-large;
+}
+
+h1 {
+	text-align: center;
+}
+
+.cardContainer {
+	display: grid;
+	justify-content: center;
+}
+
+.cardContainer section {
+	display: flex;
+	justify-content: space-evenly;
+}
+
+button {
+	font-size: .7em;
+	margin: 2px;
+	padding: 5px 15px;
+	border-radius: 15%;
+	background-color: #805626;
+}
+
+.card {
+	height: fit-content;
+	width: fit-content;
+	padding: 1rem 5rem;
+	font-size: 4em;
+	justify-self: center;
+	/* text-align: center; */
+	grid-column-start: 1;
+	grid-column-end: 3;
+}
+
+.react-card-back {
+	background: radial-gradient(ellipse at top, #cc9351, #52abcc);
+	text-align: center;
+}
+
+.react-card-front {
+	background: radial-gradient(ellipse at bottom, #52abcc, #cc9351);
+	text-align: center;
+}
+
+.status {
+	margin-top: 1em;
+	text-align: center;
+	text-decoration: underline #095170;
+}

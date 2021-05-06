@@ -1,1 +1,1 @@
-	have db return it's status
+	de-uglify

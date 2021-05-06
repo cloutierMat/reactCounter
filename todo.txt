@@ -1,5 +1,4 @@
 frontend
-	de-uglify
 	add components to enter store and pos
 	fecth only every 3 seconds. post or get depending on if new value 
 
