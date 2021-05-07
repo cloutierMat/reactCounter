@@ -6,6 +6,7 @@ const port = 8087
 // Express parser
 app.use(express.json())
 app.use(cors())
+app.use(express.static('../frontend'))
 
 const counter = require('./router/counter')
 app.use('/counter', counter)
